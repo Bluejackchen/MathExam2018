@@ -1,0 +1,113 @@
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Random;
+
+public class MathExam6304 {
+
+	static int n, grade;
+	public static void main(String[] args) {  //主函数接受用户输入状态
+		if (checkNumber(args[0], args[1])) {
+			createFile();
+			try {
+				System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream("out.txt")), true));
+			} catch (FileNotFoundException e) {
+				System.out.println("输出重定向失败");
+				e.printStackTrace();
+			}
+			work();
+		}
+	}
+	public static boolean checkNumber(String n, String grade) { 	//检查输入的参数是否合法
+		if (!n.matches("\\d*")) {   		// 若输入题数不为数字
+			if (n.matches("-\\d*")) {      //若输入题目数量为负数
+				System.out.println("输入错误");
+				return false;
+			} else {
+				System.out.println("请输入数字!");
+				return false;
+			}
+		} else {
+			n = Integer.parseInt(n);
+			if (n > 100) {
+				System.out.println("请输入（1-100）的数字！");
+				return false;
+			}
+		}
+		if (!grade.matches("[1-2]")) {
+			System.out.println("年级只能是1或2");
+			return false;
+		} else {
+			grade = Integer.parseInt(grade);
+		}
+		return true;
+	}
+	public static void work() {  //将运算式子和正确结果输出到文件out.txt
+		int firstNum, secondNum, symbal;
+		String str = "", result = "";
+		Random rand = new Random();
+		for (int i = 1; i <= n; i++) {
+			firstNum = rand.nextInt(101);  		
+			secondNum = rand.nextInt(101);          // 随机生成0-100的数
+			if (grade == 1) {
+				symbal = rand.nextInt(2);
+			} else
+				symbal = rand.nextInt(4); // 0 1 2 3 分别对应"+" "-" "*" "/"
+			if (symbal == 0) {
+				if ((firstNum + secondNum) > 100) {  //若两数之和大于100
+					i--;
+					continue;
+				}
+				str += "(" + i + ") " + firstNum + " + " + secondNum + "\r\n";
+				result += "(" + i + ") " + firstNum + " + " + secondNum + " = " + (firstNum + secondNum) + "\r\n";
+			} else if (symbal == 1) {
+				if ((firstNum - secondNum) < 0) {// 两数之差出现负数
+					i--;
+					continue;
+				}
+				str += "(" + i + ") " + firstNum + " - " + secondNum + "\r\n";
+				result += "(" + i + ") " + firstNum + " - " + secondNum + " = " + (firstNum - secondNum) + "\r\n";
+			} else if (symbal == 2) {
+				firstNum = rand.nextInt(10);				// 乘除数值为0-9
+				secondNum = rand.nextInt(10);
+				if ((firstNum * secondNum) > 100) { //若两数之积大于100
+					i--;
+					continue;
+				}
+				str += "(" + i + ") " + firstNum + " * " + secondNum + "\r\n";
+				result += "(" + i + ") " + firstNum + " * " + secondNum + " = " + (firstNum * secondNum) + "\r\n";
+			} else {
+				firstNum = rand.nextInt(11);
+				secondNum = rand.nextInt(11);
+				if (secondNum == 0) { // 除数不能为0
+					i--;
+					continue;
+				}
+				str += "(" + i + ") " + firstNum + " / " + secondNum + "\r\n";
+				if (firstNum % secondNum != 0) {
+					result += "(" + i + ") " + firstNum + " / " + secondNum + " = " + (firstNum / secondNum) + "..." + (firstNum % secondNum)
+							+ "\r\n";
+				} else {
+					result += "(" + i + ") " + firstNum + " / " + secondNum + " = " + (firstNum / secondNum) + "\r\n";
+				}
+			}
+		}
+		System.out.println(str);
+		System.out.print(result);
+	}
+
+	public static void createFile() {
+		File file = new File("out.txt");
+		if (!file.exists()) {
+			try {
+				file.createFileNewFile();
+			} catch (IOException e) {
+				System.out.println("文件创建失败！");
+				e.printStackTrace();
+			}
+		}
+	}
+}
